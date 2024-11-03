@@ -81,9 +81,9 @@ namespace Gvz.Laboratory.ProductService.Repositories
         public async Task<Guid> UpdateSupplierAsync(SupplierDto supplier)
         {
             await _context.Suppliers
-                .Where(m => m.Id == supplier.Id)
-                .ExecuteUpdateAsync(m => m
-                    .SetProperty(m => m.SupplierName, supplier.SupplierName)
+                .Where(s => s.Id == supplier.Id)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(s => s.SupplierName, supplier.SupplierName)
                  );
 
             return supplier.Id;

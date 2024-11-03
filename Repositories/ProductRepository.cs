@@ -79,14 +79,17 @@ namespace Gvz.Laboratory.ProductService.Repositories
                 .FirstOrDefaultAsync(p => p.Id == product.Id)
                 ?? throw new RepositoryException("Продукт не найден");
 
-            productEntity.ProductName = product.ProductName;
+            if ((supplierEntities != null) && (productEntity != null))
+            {
+                productEntity.ProductName = product.ProductName;
 
-            productEntity.Suppliers.Clear();
-            productEntity.Suppliers.AddRange(supplierEntities);
+                productEntity.Suppliers.Clear();
+                productEntity.Suppliers.AddRange(supplierEntities);
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
 
-            return productEntity.Id;
+            return product.Id;
         }
 
         public async Task DeleteProductsAsync(List<Guid> ids)

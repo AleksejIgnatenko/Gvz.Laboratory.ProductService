@@ -39,10 +39,10 @@ namespace Gvz.Laboratory.ProductService.Kafka
                     try
                     {
                         var cr = _consumer.Consume(cancellationToken);
-                        var deleteManufacturers = JsonSerializer.Deserialize<List<Guid>>(cr.Message.Value)
+                        var deleteSuppliers = JsonSerializer.Deserialize<List<Guid>>(cr.Message.Value)
                             ?? throw new InvalidOperationException("Deserialization failed: List<Guid> is null.");
 
-                        await _supplierRepository.DeleteSuppliersAsync(deleteManufacturers);
+                        await _supplierRepository.DeleteSuppliersAsync(deleteSuppliers);
                     }
                     catch (ConsumeException e)
                     {
@@ -53,6 +53,10 @@ namespace Gvz.Laboratory.ProductService.Kafka
             catch (OperationCanceledException)
             {
                 _consumer.Close();
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log.Error(ex.Message);
             }
         }
 

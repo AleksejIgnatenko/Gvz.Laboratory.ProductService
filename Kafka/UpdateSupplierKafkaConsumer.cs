@@ -40,10 +40,10 @@ namespace Gvz.Laboratory.ProductService.Kafka
                     {
                         var cr = _consumer.Consume(cancellationToken);
 
-                        var addSupplierDto = JsonSerializer.Deserialize<SupplierDto>(cr.Message.Value)
+                        var updateSupplierDto = JsonSerializer.Deserialize<SupplierDto>(cr.Message.Value)
                             ?? throw new InvalidOperationException("Deserialization failed: ManufacturerDto is null.");
 
-                        var addManufacturerId = await _supplierRepository.UpdateSupplierAsync(addSupplierDto);
+                        var updateManufacturerId = await _supplierRepository.UpdateSupplierAsync(updateSupplierDto);
 
                     }
                     catch (ConsumeException e)
@@ -55,6 +55,10 @@ namespace Gvz.Laboratory.ProductService.Kafka
             catch (OperationCanceledException)
             {
                 _consumer.Close();
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log.Error(ex.Message);
             }
         }
 

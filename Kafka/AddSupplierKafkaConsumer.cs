@@ -56,6 +56,10 @@ namespace Gvz.Laboratory.ProductService.Kafka
             {
                 _consumer.Close();
             }
+            catch (InvalidOperationException ex)
+            {
+                Log.Error(ex.Message);
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

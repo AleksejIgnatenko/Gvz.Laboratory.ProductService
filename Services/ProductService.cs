@@ -30,6 +30,7 @@ namespace Gvz.Laboratory.ProductService.Services
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
+                SupplierIds = supplierIds
             };
 
             await _productKafkaProducer.SendToKafkaAsync(productDto, "add-product-topic");
