@@ -9,10 +9,12 @@ namespace Gvz.Laboratory.ProductService.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly GvzLaboratoryProductServiceDbContext _context;
+        private readonly ISupplierRepository _supplierRepository;
 
-        public ProductRepository(GvzLaboratoryProductServiceDbContext context)
+        public ProductRepository(GvzLaboratoryProductServiceDbContext context, ISupplierRepository supplierRepository)
         {
             _context = context;
+            _supplierRepository = supplierRepository;
         }
 
         public async Task<Guid> CreateProductAsync(ProductModel product, List<Guid> supplierIds)
@@ -21,11 +23,8 @@ namespace Gvz.Laboratory.ProductService.Repositories
 
             if (existingProduct != null) { throw new RepositoryException("Такой продукт уже существует"); }
 
-            var existingSuppliers = await _context.Suppliers
-                .Where(s => supplierIds.Contains(s.Id))
-                .ToListAsync();
-
-            if (existingSuppliers == null) { throw new RepositoryException("Поставщик(и) не найден(ы)"); }
+            var existingSuppliers = await _supplierRepository.GetSuppliersByIdsAsync(supplierIds)
+                ?? throw new RepositoryException("Поставщик(и) не был(и) найден(ы)");
 
             var productEntity = new ProductEntity
             {
@@ -44,53 +43,66 @@ namespace Gvz.Laboratory.ProductService.Repositories
         {
             var productEntities = await _context.Products
                 .AsNoTracking()
-                .Include(p => p.Suppliers)
                 .OrderByDescending(p => p.DateCreate)
                 .Skip(pageNumber * 20)
                 .Take(20)
                 .ToListAsync();
+
+            if (!productEntities.Any() && pageNumber != 0)
+            {
+                pageNumber--;
+                productEntities = await _context.Products
+                    .AsNoTracking()
+                    .OrderByDescending(p => p.DateCreate)
+                    .Skip(pageNumber * 20)
+                    .Take(20)
+                    .ToListAsync();
+            }
 
             var numberProducts = await _context.Products.CountAsync();
 
             var products = productEntities.Select(p => ProductModel.Create(
                 p.Id,
                 p.ProductName,
-                p.Suppliers.Select(s => SupplierModel.Create(s.Id, s.SupplierName, s.Manufacturer)).ToList(),
                 false).product).ToList();
 
             return (products, numberProducts);
         }
 
-        public async Task<(List<SupplierModel> suppliers, int numberSuppliers)> GetSuppliersForProductPageAsync(Guid productId, int pageNumber)
+        public async Task<Guid> UpdateProductAsync(ProductModel product, List<Guid> supplierIds)
         {
-            var supplierEntities = await _context.Suppliers
-                .AsNoTracking()
-                .Where(s => s.Products.Any(p => p.Id == productId))
-                .Skip(pageNumber * 20)
-                .Take(20)
-                .ToListAsync();
+            var supplierEntities = await _supplierRepository.GetSuppliersByIdsAsync(supplierIds)
+                ?? throw new RepositoryException("Поставщик(и) не был(и) найден(ы)");
 
-            var numberSuppliers = await _context.Suppliers
-                .CountAsync(s => s.Products.Any(p => p.Id == productId));
+            var productEntity = await _context.Products
+                .Include(p => p.Suppliers)
+                .FirstOrDefaultAsync(p => p.Id == product.Id)
+                ?? throw new RepositoryException("Продукт не найден");
 
-            var suppliers = supplierEntities.Select(s => SupplierModel.Create(s.Id, s.SupplierName, s.Manufacturer)).ToList();
+            productEntity.ProductName = product.ProductName;
 
-            return (suppliers, numberSuppliers);
-        }
+            productEntity.Suppliers.Clear();
+            productEntity.Suppliers.AddRange(supplierEntities);
 
-        public async Task<Guid> UpdateProductAsync(ProductModel product)
-        {
-            await _context.Products
-                .Where(p => p.Id == product.Id)
-                .ExecuteUpdateAsync(p => p
-                    .SetProperty(p => p.ProductName, product.ProductName)
-                );
+            await _context.SaveChangesAsync();
 
-            return product.Id;
+            return productEntity.Id;
         }
 
         public async Task DeleteProductsAsync(List<Guid> ids)
         {
+            var productEntities = await _context.Products
+                .Include(p => p.Suppliers)
+                .Where(s => ids.Contains(s.Id))
+                .ToListAsync();
+
+            foreach (var productEntity in productEntities)
+            {
+                productEntity.Suppliers.Clear();
+            }
+
+            await _context.SaveChangesAsync();
+
             await _context.Products
                 .Where(s => ids.Contains(s.Id))
                 .ExecuteDeleteAsync();

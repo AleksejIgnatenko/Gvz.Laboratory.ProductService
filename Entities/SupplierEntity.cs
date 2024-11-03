@@ -4,7 +4,6 @@
     {
         public Guid Id { get; set; }
         public string SupplierName { get; set; } = string.Empty;
-        public string Manufacturer { get; set; } = string.Empty;
         public List<ProductEntity> Products { get; set; } = new List<ProductEntity>();
     }
 }

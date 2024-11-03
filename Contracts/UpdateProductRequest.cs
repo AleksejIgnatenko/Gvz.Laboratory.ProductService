@@ -1,6 +1,8 @@
 ﻿namespace Gvz.Laboratory.ProductService.Contracts
 {
     public record UpdateProductRequest(
-        string ProductName
+        Guid Id,
+        string ProductName,
+        List<Guid> SupplierIds
         );
 }

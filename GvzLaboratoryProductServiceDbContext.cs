@@ -7,5 +7,15 @@ namespace Gvz.Laboratory.ProductService
     {
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<SupplierEntity> Suppliers { get; set; }
+
+        public GvzLaboratoryProductServiceDbContext(DbContextOptions<GvzLaboratoryProductServiceDbContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //configuration db
+        }
     }
 }
