@@ -20,7 +20,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         {
             var id = await _productService.CreateProductAsync(Guid.NewGuid(),
                                                         createProductRequest.ProductName,
-                                                        createProductRequest.SupplierIds);
+                                                        createProductRequest.SuppliersIds);
             return Ok();
         }
 
@@ -39,7 +39,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult> UpdateProductAsync(Guid id, [FromBody] UpdateProductRequest updateProductRequest)
         {
-            await _productService.UpdateProductAsync(id, updateProductRequest.ProductName, updateProductRequest.SupplierIds);
+            await _productService.UpdateProductAsync(id, updateProductRequest.ProductName, updateProductRequest.SuppliersIds);
             return Ok();
         }
 

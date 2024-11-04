@@ -29,6 +29,8 @@ builder.Services.AddDbContext<GvzLaboratoryProductServiceDbContext>(options =>
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+builder.Services.AddScoped<ISuppliersService, SuppliersService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 
 var producerConfig = new ProducerConfig

@@ -2,6 +2,6 @@
 {
     public record CreateProductRequest(
         string ProductName,
-        List<Guid> SupplierIds
+        List<Guid> SuppliersIds
         );
 }

@@ -3,6 +3,6 @@
     public record UpdateProductRequest(
         Guid Id,
         string ProductName,
-        List<Guid> SupplierIds
+        List<Guid> SuppliersIds
         );
 }
