@@ -1,7 +1,7 @@
 ﻿namespace Gvz.Laboratory.ProductService.Contracts
 {
     public record GetProductsForPageResponseWrapper(
-        List<GetProductsForPageResponse> Products,
+        List<GetProductsResponse> Products,
         int NumberProducts
         );
 }

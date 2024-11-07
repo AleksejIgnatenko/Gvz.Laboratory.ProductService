@@ -1,6 +1,6 @@
 ﻿namespace Gvz.Laboratory.ProductService.Contracts
 {
-    public record GetProductsForPageResponse(
+    public record GetProductsResponse(
         Guid Id,
         string ProductName
         );

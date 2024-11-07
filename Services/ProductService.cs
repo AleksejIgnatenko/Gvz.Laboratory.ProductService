@@ -38,6 +38,11 @@ namespace Gvz.Laboratory.ProductService.Services
             return productId;
         }
 
+        public async Task<List<ProductModel>> GetProductsAsync()
+        {
+            return await _productRepository.GetProductsAsync();
+        }
+
         public async Task<(List<ProductModel> products, int numberProducts)> GetProductsForPageAsync(int pageNumber)
         {
             return await _productRepository.GetProductsForPageAsync(pageNumber);
@@ -57,6 +62,7 @@ namespace Gvz.Laboratory.ProductService.Services
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
+                SupplierIds = supplierIds,
             };
             await _productKafkaProducer.SendToKafkaAsync(productDto, "update-product-topic");
 

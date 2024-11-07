@@ -39,6 +39,21 @@ namespace Gvz.Laboratory.ProductService.Repositories
             return productEntity.Id;
         }
 
+        public async Task<List<ProductModel>> GetProductsAsync()
+        {
+            var productEntities = await _context.Products
+                .AsNoTracking()
+                .OrderByDescending(p => p.DateCreate)
+                .ToListAsync();
+
+            var products = productEntities.Select(p => ProductModel.Create(
+                p.Id,
+                p.ProductName,
+                false).product).ToList();
+
+            return products;
+        }
+
         public async Task<(List<ProductModel> products, int numberProducts)> GetProductsForPageAsync(int pageNumber)
         {
             var productEntities = await _context.Products
