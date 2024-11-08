@@ -41,7 +41,7 @@ namespace Gvz.Laboratory.ProductService.Kafka
                         var cr = _consumer.Consume(cancellationToken);
 
                         var addSupplierDto = JsonSerializer.Deserialize<SupplierDto>(cr.Message.Value)
-                            ?? throw new InvalidOperationException("Deserialization failed: ManufacturerDto is null.");
+                            ?? throw new InvalidOperationException("Deserialization failed: SupplierDto is null.");
 
                         var addManufacturerId = await _supplierRepository.CreateSupplierAsync(addSupplierDto);
 

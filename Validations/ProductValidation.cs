@@ -8,7 +8,7 @@ namespace Gvz.Laboratory.ProductService.Validations
         public ProductValidation()
         {
             RuleFor(x => x.ProductName)
-                    .NotEmpty().WithMessage("Название поставщика не может быть пустым");
+                    .NotEmpty().WithMessage("Название продукта не может быть пустым");
         }
     }
 }
