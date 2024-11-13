@@ -22,6 +22,10 @@ namespace Gvz.Laboratory.ProductService.Models
             Suppliers = suppliers;
         }
 
+        public ProductModel()
+        {
+        }
+
         public static (Dictionary<string, string> errors, ProductModel product) Create(Guid id, string productName, bool useValidation = true)
         {
             Dictionary<string, string> errors = new Dictionary<string, string>();

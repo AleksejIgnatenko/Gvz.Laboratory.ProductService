@@ -39,6 +39,11 @@ namespace Gvz.Laboratory.ProductService.Repositories
             return productEntity.Id;
         }
 
+        public async Task<ProductEntity?> GetProductEntityByIdAsync(Guid productId)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        }
+
         public async Task<List<ProductModel>> GetProductsAsync()
         {
             var productEntities = await _context.Products
