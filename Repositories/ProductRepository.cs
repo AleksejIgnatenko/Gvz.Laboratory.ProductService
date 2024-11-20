@@ -94,17 +94,24 @@ namespace Gvz.Laboratory.ProductService.Repositories
             var supplierEntities = await _supplierRepository.GetSuppliersByIdsAsync(supplierIds)
                 ?? throw new RepositoryException("Поставщик(и) не был(и) найден(ы)");
 
-            var productEntity = await _context.Products
+            var existingProductEntity = await _context.Products
                 .Include(p => p.Suppliers)
                 .FirstOrDefaultAsync(p => p.Id == product.Id)
                 ?? throw new RepositoryException("Продукт не найден");
 
-            if ((supplierEntities != null) && (productEntity != null))
+            var existingProductName = await _context.Products
+                .FirstOrDefaultAsync(p => (p.ProductName == product.ProductName) && (p.ProductName != existingProductEntity.ProductName));
+            if (existingProductName != null)
             {
-                productEntity.ProductName = product.ProductName;
+                throw new RepositoryException("Продукт с таким названием уже существует.");
+            }
 
-                productEntity.Suppliers.Clear();
-                productEntity.Suppliers.AddRange(supplierEntities);
+            if ((supplierEntities != null) && (existingProductEntity != null))
+            {
+                existingProductEntity.ProductName = product.ProductName;
+
+                existingProductEntity.Suppliers.Clear();
+                existingProductEntity.Suppliers.AddRange(supplierEntities);
 
                 await _context.SaveChangesAsync();
             }
