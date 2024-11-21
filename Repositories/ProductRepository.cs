@@ -48,12 +48,14 @@ namespace Gvz.Laboratory.ProductService.Repositories
         {
             var productEntities = await _context.Products
                 .AsNoTracking()
+                .Include(p => p.Suppliers)
                 .OrderByDescending(p => p.DateCreate)
                 .ToListAsync();
 
             var products = productEntities.Select(p => ProductModel.Create(
                 p.Id,
                 p.ProductName,
+                p.Suppliers.Select(s => SupplierModel.Create(s.Id, s.SupplierName)).ToList(),
                 false).product).ToList();
 
             return products;

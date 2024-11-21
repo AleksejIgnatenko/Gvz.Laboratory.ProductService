@@ -36,6 +36,17 @@ namespace Gvz.Laboratory.ProductService.Controllers
         }
 
         [HttpGet]
+        [Route("getProductsForOptions")]
+        public async Task<ActionResult> GetProductsForOptionsAsync()
+        {
+            var products = await _productService.GetProductsAsync();
+            
+            var response = products.Select(p => new GetProductsForOptionsResponse(p.Id, p.ProductName, p.Suppliers.Select(s => s.Id).ToList())).ToList();
+
+            return Ok(response);
+        }
+
+        [HttpGet]
         public async Task<ActionResult> GetProductsForPageAsync(int pageNumber)
         {
             var (products, numberProducts) = await _productService.GetProductsForPageAsync(pageNumber);
