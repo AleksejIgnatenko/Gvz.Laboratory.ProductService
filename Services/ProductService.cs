@@ -2,6 +2,7 @@
 using Gvz.Laboratory.ProductService.Dto;
 using Gvz.Laboratory.ProductService.Exceptions;
 using Gvz.Laboratory.ProductService.Models;
+using OfficeOpenXml;
 
 namespace Gvz.Laboratory.ProductService.Services
 {
@@ -47,6 +48,39 @@ namespace Gvz.Laboratory.ProductService.Services
         {
             return await _productRepository.GetProductsForPageAsync(pageNumber);
         }
+
+        public async Task<(List<ProductModel> products, int numberProducts)> SearchProductsAsync(string searchQuery, int pageNumber)
+        {
+            return await _productRepository.SearchProductsAsync(searchQuery, pageNumber);
+        }
+
+        public async Task<MemoryStream> ExportProductsToExcelAsync()
+        {
+            var manufacturers = await _productRepository.GetProductsAsync();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Manufacturers");
+
+                worksheet.Cells[1, 1].Value = "Id";
+                worksheet.Cells[1, 2].Value = "Название";
+
+                for (int i = 0; i < manufacturers.Count; i++)
+                {
+                    worksheet.Cells[i + 2, 1].Value = manufacturers[i].Id;
+                    worksheet.Cells[i + 2, 2].Value = manufacturers[i].ProductName;
+                }
+
+                worksheet.Cells.AutoFitColumns();
+
+                var stream = new MemoryStream();
+                await package.SaveAsAsync(stream);
+
+                stream.Position = 0; // Сбрасываем поток
+                return stream;
+            }
+        }
+
 
         public async Task<Guid> UpdateProductAsync(Guid id, string name, List<Guid> supplierIds)
         {

@@ -1,5 +1,6 @@
 ﻿using Gvz.Laboratory.ProductService.Abstractions;
 using Gvz.Laboratory.ProductService.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gvz.Laboratory.ProductService.Controllers
@@ -55,6 +56,28 @@ namespace Gvz.Laboratory.ProductService.Controllers
 
             var responseWrapper = new GetProductsForPageResponseWrapper(response, numberProducts);
 
+            return Ok(responseWrapper);
+        }
+
+        [HttpGet]
+        [Route("exportProductsToExcel")]
+        [Authorize]
+        public async Task<ActionResult> ExportProductsToExcelAsync()
+        {
+            var stream = await _productService.ExportProductsToExcelAsync();
+            var fileName = "Products.xlsx";
+
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
+        [HttpGet]
+        [Route("searchProducts")]
+        [Authorize]
+        public async Task<ActionResult> SearchProductsAsync(string searchQuery, int pageNumber)
+        {
+            var (products, numberProducts) = await _productService.SearchProductsAsync(searchQuery, pageNumber);
+            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName)).ToList();
+            var responseWrapper = new GetProductsForPageResponseWrapper(response, numberProducts);
             return Ok(responseWrapper);
         }
 
