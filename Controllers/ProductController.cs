@@ -21,6 +21,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         {
             var id = await _productService.CreateProductAsync(Guid.NewGuid(),
                                                         createProductRequest.ProductName,
+                                                        createProductRequest.UnitsOfMeasurement,
                                                         createProductRequest.SuppliersIds);
             return Ok();
         }
@@ -31,7 +32,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         {
             var products = await _productService.GetProductsAsync();
 
-            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName)).ToList();
+            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName, p.UnitsOfMeasurement)).ToList();
 
             return Ok(response);
         }
@@ -52,7 +53,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         {
             var (products, numberProducts) = await _productService.GetProductsForPageAsync(pageNumber);
 
-            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName)).ToList();
+            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName, p.UnitsOfMeasurement)).ToList();
 
             var responseWrapper = new GetProductsForPageResponseWrapper(response, numberProducts);
 
@@ -76,7 +77,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         public async Task<ActionResult> SearchProductsAsync(string searchQuery, int pageNumber)
         {
             var (products, numberProducts) = await _productService.SearchProductsAsync(searchQuery, pageNumber);
-            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName)).ToList();
+            var response = products.Select(p => new GetProductsResponse(p.Id, p.ProductName, p.UnitsOfMeasurement)).ToList();
             var responseWrapper = new GetProductsForPageResponseWrapper(response, numberProducts);
             return Ok(responseWrapper);
         }
@@ -84,7 +85,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult> UpdateProductAsync(Guid id, [FromBody] UpdateProductRequest updateProductRequest)
         {
-            await _productService.UpdateProductAsync(id, updateProductRequest.ProductName, updateProductRequest.SuppliersIds);
+            await _productService.UpdateProductAsync(id, updateProductRequest.ProductName, updateProductRequest.UnitsOfMeasurement, updateProductRequest.SuppliersIds);
             return Ok();
         }
 

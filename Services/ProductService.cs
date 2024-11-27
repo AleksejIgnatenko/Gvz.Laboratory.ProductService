@@ -17,9 +17,9 @@ namespace Gvz.Laboratory.ProductService.Services
             _productKafkaProducer = productKafkaProducer;
         }
 
-        public async Task<Guid> CreateProductAsync(Guid id, string name, List<Guid> supplierIds)
+        public async Task<Guid> CreateProductAsync(Guid id, string name, string unitsOfMeasurement, List<Guid> supplierIds)
         {
-            var (errors, product) = ProductModel.Create(id, name);
+            var (errors, product) = ProductModel.Create(id, name, unitsOfMeasurement);
             if (errors.Count > 0)
             {
                 throw new ProductValidationException(errors);
@@ -31,6 +31,7 @@ namespace Gvz.Laboratory.ProductService.Services
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
+                UnitsOfMeasurement = product.UnitsOfMeasurement,
                 SupplierIds = supplierIds
             };
 
@@ -64,11 +65,13 @@ namespace Gvz.Laboratory.ProductService.Services
 
                 worksheet.Cells[1, 1].Value = "Id";
                 worksheet.Cells[1, 2].Value = "Название";
+                worksheet.Cells[1, 3].Value = "Единицы измерения";
 
                 for (int i = 0; i < manufacturers.Count; i++)
                 {
                     worksheet.Cells[i + 2, 1].Value = manufacturers[i].Id;
                     worksheet.Cells[i + 2, 2].Value = manufacturers[i].ProductName;
+                    worksheet.Cells[i + 2, 3].Value = manufacturers[i].UnitsOfMeasurement;
                 }
 
                 worksheet.Cells.AutoFitColumns();
@@ -82,9 +85,9 @@ namespace Gvz.Laboratory.ProductService.Services
         }
 
 
-        public async Task<Guid> UpdateProductAsync(Guid id, string name, List<Guid> supplierIds)
+        public async Task<Guid> UpdateProductAsync(Guid id, string name, string unitsOfMeasurement, List<Guid> supplierIds)
         {
-            var (errors, product) = ProductModel.Create(id, name);
+            var (errors, product) = ProductModel.Create(id, name, unitsOfMeasurement);
             if (errors.Count > 0)
             {
                 throw new ProductValidationException(errors);
@@ -96,6 +99,7 @@ namespace Gvz.Laboratory.ProductService.Services
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
+                UnitsOfMeasurement = product.UnitsOfMeasurement,
                 SupplierIds = supplierIds,
             };
             await _productKafkaProducer.SendToKafkaAsync(productDto, "update-product-topic");

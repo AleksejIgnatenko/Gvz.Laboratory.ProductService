@@ -9,6 +9,9 @@ namespace Gvz.Laboratory.ProductService.Validations
         {
             RuleFor(x => x.ProductName)
                     .NotEmpty().WithMessage("Название продукта не может быть пустым");
+
+            RuleFor(x => x.UnitsOfMeasurement)
+                    .NotEmpty().WithMessage("Единицы  измерения не могут быть пустыми");
         }
     }
 }

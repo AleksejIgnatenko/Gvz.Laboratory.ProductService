@@ -2,6 +2,7 @@
 {
     public record CreateProductRequest(
         string ProductName,
+        string UnitsOfMeasurement,
         List<Guid> SuppliersIds
         );
 }

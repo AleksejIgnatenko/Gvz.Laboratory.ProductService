@@ -80,7 +80,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
                 p.Id,
                 p.BatchNumber,
                 p.DateOfReceipt,
-                ProductModel.Create(p.Product.Id, p.Product.ProductName, false).product,
+                ProductModel.Create(p.Product.Id, p.Product.ProductName, p.Product.UnitsOfMeasurement, false).product,
                 p.SupplierName,
                 p.ManufacturerName,
                 p.BatchSize,

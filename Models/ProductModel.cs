@@ -7,18 +7,21 @@ namespace Gvz.Laboratory.ProductService.Models
     {
         public Guid Id { get; }
         public string ProductName { get; } = string.Empty;
+        public string UnitsOfMeasurement { get; } = string.Empty;
         public List<SupplierModel> Suppliers { get; } = new List<SupplierModel>();
 
-        public ProductModel(Guid id, string productName)
+        public ProductModel(Guid id, string productName, string unitsOfMeasurement)
         {
             Id = id;
+            UnitsOfMeasurement = unitsOfMeasurement;
             ProductName = productName;
         }
 
-        public ProductModel(Guid id, string productName, List<SupplierModel> suppliers)
+        public ProductModel(Guid id, string productName, string unitsOfMeasurement, List<SupplierModel> suppliers)
         {
             Id = id;
             ProductName = productName;
+            UnitsOfMeasurement = unitsOfMeasurement;
             Suppliers = suppliers;
         }
 
@@ -26,11 +29,11 @@ namespace Gvz.Laboratory.ProductService.Models
         {
         }
 
-        public static (Dictionary<string, string> errors, ProductModel product) Create(Guid id, string productName, bool useValidation = true)
+        public static (Dictionary<string, string> errors, ProductModel product) Create(Guid id, string productName, string unitsOfMeasurement, bool useValidation = true)
         {
             Dictionary<string, string> errors = new Dictionary<string, string>();
 
-            ProductModel product = new ProductModel(id, productName);
+            ProductModel product = new ProductModel(id, productName, unitsOfMeasurement);
             if (!useValidation) { return (errors, product); }
 
             ProductValidation productValidation = new ProductValidation();
@@ -46,11 +49,11 @@ namespace Gvz.Laboratory.ProductService.Models
             return (errors, product);
         }
 
-        public static (Dictionary<string, string> errors, ProductModel product) Create(Guid id, string productName, List<SupplierModel> suppliers, bool useValidation = true)
+        public static (Dictionary<string, string> errors, ProductModel product) Create(Guid id, string productName, string unitsOfMeasurement, List<SupplierModel> suppliers, bool useValidation = true)
         {
             Dictionary<string, string> errors = new Dictionary<string, string>();
 
-            ProductModel product = new ProductModel(id, productName, suppliers);
+            ProductModel product = new ProductModel(id, productName, unitsOfMeasurement, suppliers);
             if (!useValidation) { return (errors, product); }
 
             ProductValidation productValidation = new ProductValidation();

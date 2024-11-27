@@ -30,6 +30,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
+                UnitsOfMeasurement = product.UnitsOfMeasurement,
                 Suppliers = existingSuppliers,
                 DateCreate = DateTime.UtcNow,
             };
@@ -55,6 +56,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
             var products = productEntities.Select(p => ProductModel.Create(
                 p.Id,
                 p.ProductName,
+                p.UnitsOfMeasurement,
                 p.Suppliers.Select(s => SupplierModel.Create(s.Id, s.SupplierName)).ToList(),
                 false).product).ToList();
 
@@ -86,6 +88,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
             var products = productEntities.Select(p => ProductModel.Create(
                 p.Id,
                 p.ProductName,
+                p.UnitsOfMeasurement,
                 false).product).ToList();
 
             return (products, numberProducts);
@@ -95,7 +98,10 @@ namespace Gvz.Laboratory.ProductService.Repositories
         {
             var productEntities = await _context.Products
                     .AsNoTracking()
-                    .Where(p => p.ProductName.ToLower().Contains(searchQuery.ToLower()))
+                    .Where(p => 
+                        p.ProductName.ToLower().Contains(searchQuery.ToLower()) ||
+                        p.UnitsOfMeasurement.ToLower().Contains(searchQuery.ToLower()) 
+                    )
                     .OrderByDescending(p => p.DateCreate)
                     .Skip(pageNumber * 20)
                     .Take(20)
@@ -108,6 +114,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
             var products = productEntities.Select(p => ProductModel.Create(
                 p.Id,
                 p.ProductName,
+                p.UnitsOfMeasurement,
                 false).product).ToList();
 
             return (products, numberProducts);
@@ -133,6 +140,7 @@ namespace Gvz.Laboratory.ProductService.Repositories
             if ((supplierEntities != null) && (existingProductEntity != null))
             {
                 existingProductEntity.ProductName = product.ProductName;
+                existingProductEntity.UnitsOfMeasurement = product.UnitsOfMeasurement;
 
                 existingProductEntity.Suppliers.Clear();
                 existingProductEntity.Suppliers.AddRange(supplierEntities);
