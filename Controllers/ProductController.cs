@@ -17,6 +17,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Worker")]
         public async Task<ActionResult> CreateProductAsync([FromBody] CreateProductRequest createProductRequest)
         {
             var id = await _productService.CreateProductAsync(Guid.NewGuid(),
@@ -28,6 +29,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
 
         [HttpGet]
         [Route("getProductsAsync")]
+        [Authorize]
         public async Task<ActionResult> GetProductsAsync()
         {
             var products = await _productService.GetProductsAsync();
@@ -39,6 +41,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
 
         [HttpGet]
         [Route("getProductsForOptions")]
+        [Authorize]
         public async Task<ActionResult> GetProductsForOptionsAsync()
         {
             var products = await _productService.GetProductsAsync();
@@ -49,6 +52,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> GetProductsForPageAsync(int pageNumber)
         {
             var (products, numberProducts) = await _productService.GetProductsForPageAsync(pageNumber);
@@ -83,6 +87,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin,Manager,Worker")]
         public async Task<ActionResult> UpdateProductAsync(Guid id, [FromBody] UpdateProductRequest updateProductRequest)
         {
             await _productService.UpdateProductAsync(id, updateProductRequest.ProductName, updateProductRequest.UnitsOfMeasurement, updateProductRequest.SuppliersIds);
@@ -90,6 +95,7 @@ namespace Gvz.Laboratory.ProductService.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin,Manager,Worker")]
         public async Task<ActionResult> DeleteProductAsync([FromBody] List<Guid> ids)
         {
             if (ids == null || !ids.Any())

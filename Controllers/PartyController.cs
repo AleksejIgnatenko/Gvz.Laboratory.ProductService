@@ -14,9 +14,10 @@ namespace Gvz.Laboratory.ProductService.Controllers
         {
             _partyService = partyService;
         }
+
         [HttpGet]
-        [Authorize]
         [Route("getProductPartiesForPage")]
+        [Authorize]
         public async Task<ActionResult> GetProductPartiesForPageAsync(Guid productId, int pageNumber)
         {
             var (parties, numberParties) = await _partyService.GetProductPartiesForPageAsync(productId, pageNumber);
